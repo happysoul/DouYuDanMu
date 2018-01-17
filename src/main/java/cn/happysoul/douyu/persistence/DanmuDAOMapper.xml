@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ylu.persistence.DanmuDAOMapper">
+  <resultMap id="DanmuDAOMapper" type="com.ylu.dao.DanmuDAO">
+    <id column="cid" jdbcType="VARCHAR" property="cid" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="gid" jdbcType="VARCHAR" property="gid" />
+    <result column="rid" jdbcType="VARCHAR" property="rid" />
+    <result column="uid" jdbcType="VARCHAR" property="uid" />
+    <result column="nn" jdbcType="VARCHAR" property="nn" />
+    <result column="bnn" jdbcType="VARCHAR" property="bnn" />
+    <result column="txt" jdbcType="VARCHAR" property="txt" />
+    <result column="level" jdbcType="VARCHAR" property="level" />
+    <result column="mtime" jdbcType="TIMESTAMP" property="mtime" />
+  </resultMap>
+  
+  <resultMap type="java.util.HashMap" id="ResultByBnnMapper">
+     <result column="bnn" jdbcType="VARCHAR" property="bnn" />
+    <result column="count" jdbcType="VARCHAR" property="count" />
+  </resultMap>
+  
+   <resultMap type="java.util.HashMap" id="ResultByNnMapper">
+      <result column="nn" jdbcType="VARCHAR" property="nn" />
+   	  <result column="count" jdbcType="VARCHAR" property="count" />
+   </resultMap>
+ 
+   <resultMap type="java.util.HashMap" id="ResultByTimeIntervalMapper">
+      <result column="time" jdbcType="TIMESTAMP" property="time" />
+      <result column="count" jdbcType="VARCHAR" property="count" />
+   </resultMap>
+   
+  <sql id="Base_Column_List">
+    cid, type, gid, rid, uid, nn, bnn, txt, level, mtime
+  </sql>
+  
+   <sql id="Table_Name">
+    danmu_room_3
+  </sql>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="DanmuDAOMapper">
+    select 
+    <include refid="Base_Column_List" />
+    from <include refid="Table_Name" />
+    where cid = #{cid,jdbcType=VARCHAR}
+  </select>
+  
+    <select id="selectByUid" parameterType="java.lang.String" resultMap="DanmuDAOMapper">
+    select 
+    <include refid="Base_Column_List" />
+    from <include refid="Table_Name" />
+    where uid = #{uid,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByBnn" parameterType="java.lang.String" resultMap="DanmuDAOMapper">
+    select 
+    <include refid="Base_Column_List" />
+    from <include refid="Table_Name" />
+    where bnn = #{bnn,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByLevel" parameterType="java.lang.String" resultMap="DanmuDAOMapper">
+    select 
+    <include refid="Base_Column_List" />
+    from <include refid="Table_Name" />
+    where level = #{level,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectTopByBnn" parameterType="java.lang.Integer" resultMap="ResultByBnnMapper">
+    select 
+    bnn, count(*) as count
+    from <include refid="Table_Name" />
+    group by bnn
+    order by count desc
+    limit #{limit,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectTopByNn" parameterType="java.lang.Integer" resultMap="ResultByNnMapper">
+    select 
+    nn, count(*) as count
+    from <include refid="Table_Name" />
+    group by nn
+    order by count desc
+    limit #{limit,jdbcType=INTEGER}
+  </select>
+ 
+  <select id="selectAllByTime" parameterType="java.util.HashMap" resultMap="DanmuDAOMapper">
+    select 
+   	<include refid="Base_Column_List" />
+	from <include refid="Table_Name" />
+	where mtime between #{start} and #{end};
+  </select>
+  
+   <select id="selectByTimeInterval" parameterType="java.util.HashMap" resultMap="ResultByTimeIntervalMapper">
+    select 
+    DATE_FORMAT(FLOOR(mtime/#{interval})*#{interval},'%H:%i:%S') as time,
+	count(*) as count
+	from <include refid="Table_Name" />
+	where mtime between #{start} and #{end}
+	group by time;
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from <include refid="Table_Name" />
+    where cid = #{cid,jdbcType=VARCHAR}
+  </delete>
+  
+  <insert id="insert" parameterType="com.ylu.dao.DanmuDAO">
+    insert into <include refid="Table_Name" /> (cid, type, gid, 
+      rid, uid, nn, bnn, 
+      txt, level, mtime)
+    values (#{cid,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{gid,jdbcType=VARCHAR}, 
+      #{rid,jdbcType=VARCHAR}, #{uid,jdbcType=VARCHAR}, #{nn,jdbcType=VARCHAR}, #{bnn,jdbcType=VARCHAR}, 
+      #{txt,jdbcType=VARCHAR}, #{level,jdbcType=VARCHAR}, #{mtime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.ylu.dao.DanmuDAO">
+    insert into <include refid="Table_Name" />
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="cid != null">
+        cid,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="gid != null">
+        gid,
+      </if>
+      <if test="rid != null">
+        rid,
+      </if>
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="nn != null">
+        nn,
+      </if>
+      <if test="bnn != null">
+        bnn,
+      </if>
+      <if test="txt != null">
+        txt,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+      <if test="mtime != null">
+        mtime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="cid != null">
+        #{cid,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="gid != null">
+        #{gid,jdbcType=VARCHAR},
+      </if>
+      <if test="rid != null">
+        #{rid,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null">
+        #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="nn != null">
+        #{nn,jdbcType=VARCHAR},
+      </if>
+      <if test="bnn != null">
+        #{bnn,jdbcType=VARCHAR},
+      </if>
+      <if test="txt != null">
+        #{txt,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=VARCHAR},
+      </if>
+      <if test="mtime != null">
+        #{mtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ylu.dao.DanmuDAO">
+    update <include refid="Table_Name" />
+    <set>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="gid != null">
+        gid = #{gid,jdbcType=VARCHAR},
+      </if>
+      <if test="rid != null">
+        rid = #{rid,jdbcType=VARCHAR},
+      </if>
+      <if test="uid != null">
+        uid = #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="nn != null">
+        nn = #{nn,jdbcType=VARCHAR},
+      </if>
+      <if test="bnn != null">
+        bnn = #{bnn,jdbcType=VARCHAR},
+      </if>
+      <if test="txt != null">
+        txt = #{txt,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=VARCHAR},
+      </if>
+      <if test="mtime != null">
+        mtime = #{mtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where cid = #{cid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ylu.dao.DanmuDAO">
+    update <include refid="Table_Name" />
+    set type = #{type,jdbcType=VARCHAR},
+      gid = #{gid,jdbcType=VARCHAR},
+      uid = #{uid,jdbcType=VARCHAR},
+      nn = #{nn,jdbcType=VARCHAR},
+      bnn = #{bnn,jdbcType=VARCHAR},
+      txt = #{txt,jdbcType=VARCHAR},
+      level = #{level,jdbcType=VARCHAR},
+      mtime = #{mtime,jdbcType=TIMESTAMP}
+    where cid = #{cid,jdbcType=VARCHAR}
+  </update>
+  <update id="createTable" >
+  	CREATE TABLE IF NOT EXISTS <include refid="Table_Name" />(
+	cid varchar(50) NOT NULL,
+    type varchar(20),
+    gid varchar(20),
+    rid varchar(20),
+    uid varchar(20),
+    nn varchar(20),
+    bnn varchar(10),
+    txt varchar(100),
+    level varchar(10),
+    mtime TIMESTAMP
+    )ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  </update>
+</mapper>
