@@ -1,3 +1,6 @@
+
+斗鱼改了读取弹幕的规则，只能是认证企业才能调用接口，这个已经不能用了
+
 #搬运地址
 
 https://github.com/yiLu1022/DouyuDanmuCrawler
